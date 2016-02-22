@@ -1,3 +1,8 @@
 <resources>
-    <string name="app_name">EvernoteClient</string>
+    <string name="app_name">Cliente Evernote</string>
+
+    <string name="title_activity_main">MainActivity</string>
+    <string name="error_logging">Se ha producido un error iniciando sesión</string>
+    <string name="error_getting_notes">Se ha producido un error recuperando las listas</string>
+    <string name="action_try_again">Reintentar</string>
 </resources>
