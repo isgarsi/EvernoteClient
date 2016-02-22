@@ -9,6 +9,7 @@ import android.view.View;
 
 import com.evernote.edam.notestore.NoteMetadata;
 import com.igs.evernoteclient.R;
+import com.igs.evernoteclient.fragments.DetailNoteFragment;
 import com.igs.evernoteclient.fragments.NotesFragment;
 import com.igs.evernoteclient.utils.FragmentUtil;
 
@@ -40,7 +41,7 @@ public class MainActivity extends AppCompatActivity implements NotesFragment.OnN
             }
 
     @Override
-    public void onListSelected(NoteMetadata note) {
-
+    public void onListSelected(String noteId) {
+        fUtils.changeFragment(CONTAINER_ID, DetailNoteFragment.newInstance(noteId),true);
     }
 }

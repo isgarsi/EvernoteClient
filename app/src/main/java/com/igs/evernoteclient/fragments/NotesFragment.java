@@ -55,7 +55,7 @@ public class NotesFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 int position = recView.getChildAdapterPosition(v);
-                mListener.onListSelected(mNotes.get(position));
+                mListener.onListSelected(mNotes.get(position).getGuid());
             }
         });
     }
@@ -70,8 +70,6 @@ public class NotesFragment extends Fragment {
         recView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
         recView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL_LIST));
         progressBar = (ProgressBar) view.findViewById(R.id.notes_progress_bar);
-        recView.setVisibility(View.INVISIBLE);
-        progressBar.setVisibility(View.VISIBLE);
 
         return view;
     }
@@ -94,6 +92,9 @@ public class NotesFragment extends Fragment {
     }
 
     private void getNotes(){
+        recView.setVisibility(View.INVISIBLE);
+        progressBar.setVisibility(View.VISIBLE);
+
         EvernoteNoteStoreClient noteStoreClient = EvernoteSession.getInstance().getEvernoteClientFactory().getNoteStoreClient();
         NoteFilter filter = new NoteFilter();
         filter.setOrder(NoteSortOrder.UPDATED.getValue());
@@ -102,7 +103,7 @@ public class NotesFragment extends Fragment {
         spec.setIncludeTitle(true);
 
 
-        noteStoreClient.findNotesMetadataAsync(filter, 0, Integer.MAX_VALUE, spec, new EvernoteCallback<NotesMetadataList>() {
+        noteStoreClient.findNotesMetadataAsync(filter, 0, 10000, spec, new EvernoteCallback<NotesMetadataList>() {
             @Override
             public void onSuccess(NotesMetadataList notes) {
                 updateList(notes.getNotes());
@@ -145,6 +146,6 @@ public class NotesFragment extends Fragment {
     }
 
     public interface OnNotesFragmentInteractionListener {
-        void onListSelected(NoteMetadata note);
+        void onListSelected(String noteId);
     }
 }

@@ -3,6 +3,7 @@
 
     <string name="title_activity_main">MainActivity</string>
     <string name="error_logging">Se ha producido un error iniciando sesión</string>
-    <string name="error_getting_notes">Se ha producido un error recuperando las listas</string>
+    <string name="error_getting_notes">Se ha producido un error recuperando las notas</string>
+    <string name="error_getting_note_data">Se ha producido un error recuperando los datos de la nota</string>
     <string name="action_try_again">Reintentar</string>
 </resources>
