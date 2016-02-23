@@ -4,13 +4,17 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 
 import com.evernote.client.android.EvernoteSession;
 import com.evernote.client.android.asyncclient.EvernoteCallback;
@@ -30,11 +34,19 @@ import java.util.List;
 
 public class NotesFragment extends Fragment {
 
+    private final static int ORDER_CREATED = 1;
+    private final static int ORDER_UPDATED = 2;
+    private final static int ORDER_RELEVANCE = 3;
+    private final static int ORDER_UPDATE_SEQUENCE_NUMBER = 4;
+    private final static int ORDER_TITLE = 5;
+
     private OnNotesFragmentInteractionListener mListener;
     private List<NoteMetadata> mNotes;
     private NotesAdapter adapter;
     private RecyclerView recView;
     private ProgressBar progressBar;
+    private Spinner spinOrder;
+    private int sortOrder;
 
     public NotesFragment() {
         // Required empty public constructor
@@ -55,21 +67,43 @@ public class NotesFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 int position = recView.getChildAdapterPosition(v);
-                mListener.onListSelected(mNotes.get(position).getGuid());
+                mListener.onNoteSelected(mNotes.get(position).getGuid());
             }
         });
+        //Default
+        sortOrder = ORDER_UPDATED;
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_notes, container, false);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("");
+
         recView = (RecyclerView) view.findViewById(R.id.notes_rv_notes);
         recView.setHasFixedSize(true);
         recView.setAdapter(adapter);
         recView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
         recView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL_LIST));
         progressBar = (ProgressBar) view.findViewById(R.id.notes_progress_bar);
+
+        //Order by
+        spinOrder = (Spinner) getActivity().findViewById(R.id.spinner_order);
+        ArrayAdapter adapter = ArrayAdapter.createFromResource(getActivity(),R.array.order_by,R.layout.spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinOrder.setAdapter(adapter);
+        spinOrder.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long l) {
+                sortOrder = pos + 1;//because spinner starts with 0
+                getNotes();//reload notes with the new order
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+            }
+        });
+        spinOrder.setSelection(sortOrder-1);
 
         return view;
     }
@@ -97,7 +131,9 @@ public class NotesFragment extends Fragment {
 
         EvernoteNoteStoreClient noteStoreClient = EvernoteSession.getInstance().getEvernoteClientFactory().getNoteStoreClient();
         NoteFilter filter = new NoteFilter();
-        filter.setOrder(NoteSortOrder.UPDATED.getValue());
+        //Order
+        //filter.setOrder(NoteSortOrder.UPDATED.getValue());
+        filter.setOrder(sortOrder);
 
         NotesMetadataResultSpec spec = new NotesMetadataResultSpec();
         spec.setIncludeTitle(true);
@@ -147,6 +183,6 @@ public class NotesFragment extends Fragment {
     }
 
     public interface OnNotesFragmentInteractionListener {
-        void onListSelected(String noteId);
+        void onNoteSelected(String noteId);
     }
 }

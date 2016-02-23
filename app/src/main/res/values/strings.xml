@@ -2,10 +2,21 @@
     <string name="app_name">Cliente Evernote</string>
 
     <string name="title_activity_main">MainActivity</string>
+    <string name="title_new_note">Nueva Nota</string>
+    <string name="title_my_notes">Mis Notas</string>
+    <string name="title_order">Ordenar por: </string>
     <string name="error_logging">Se ha producido un error iniciando sesión</string>
     <string name="error_getting_notes">Se ha producido un error recuperando las notas</string>
     <string name="error_getting_note_data">Se ha producido un error recuperando los datos de la nota</string>
     <string name="action_try_again">Reintentar</string>
     <string name="text_date_created">Creado: </string>
     <string name="text_date_updated">Actualizado: </string>
+
+    <string-array name="order_by">
+        <item>Fecha de Creación</item>
+        <item>Fecha de Actualización</item>
+        <item>Relevancia</item>
+        <item>Secuencia Actualización</item>
+        <item>Título</item>
+    </string-array>
 </resources>
