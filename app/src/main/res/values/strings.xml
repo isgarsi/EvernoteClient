@@ -6,4 +6,6 @@
     <string name="error_getting_notes">Se ha producido un error recuperando las notas</string>
     <string name="error_getting_note_data">Se ha producido un error recuperando los datos de la nota</string>
     <string name="action_try_again">Reintentar</string>
+    <string name="text_date_created">Creado: </string>
+    <string name="text_date_updated">Actualizado: </string>
 </resources>

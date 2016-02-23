@@ -6,10 +6,38 @@
     <TextView android:id="@+id/note_item_tv_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="NAME"/>
-    <TextView android:id="@+id/note_item_tv_date"
+        android:text="NAME"
+        style="@style/Base.TextAppearance.AppCompat.Large"/>
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="15/06/2015"
-        android:layout_marginTop="3dp"/>
+        android:orientation="horizontal"
+        android:layout_marginTop="3dp">
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.3"
+            android:text="@string/text_date_created"/>
+        <TextView android:id="@+id/note_item_tv_cdate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="3dp"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="3dp">
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.3"
+            android:text="@string/text_date_updated"/>
+        <TextView android:id="@+id/note_item_tv_udate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="3dp"/>
+    </LinearLayout>
 </LinearLayout>

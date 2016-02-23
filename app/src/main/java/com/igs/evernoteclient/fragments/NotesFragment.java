@@ -101,9 +101,10 @@ public class NotesFragment extends Fragment {
 
         NotesMetadataResultSpec spec = new NotesMetadataResultSpec();
         spec.setIncludeTitle(true);
+        spec.setIncludeCreated(true);
+        spec.setIncludeUpdated(true);
 
-
-        noteStoreClient.findNotesMetadataAsync(filter, 0, 10000, spec, new EvernoteCallback<NotesMetadataList>() {
+        noteStoreClient.findNotesMetadataAsync(filter, 0, Integer.MAX_VALUE, spec, new EvernoteCallback<NotesMetadataList>() {
             @Override
             public void onSuccess(NotesMetadataList notes) {
                 updateList(notes.getNotes());
