@@ -11,6 +11,7 @@ import android.widget.LinearLayout;
 import com.evernote.edam.notestore.NoteMetadata;
 import com.igs.evernoteclient.R;
 import com.igs.evernoteclient.fragments.DetailNoteFragment;
+import com.igs.evernoteclient.fragments.EditKeyboardNoteFragment;
 import com.igs.evernoteclient.fragments.NotesFragment;
 import com.igs.evernoteclient.utils.FragmentUtil;
 
@@ -45,5 +46,17 @@ public class MainActivity extends AppCompatActivity implements NotesFragment.OnN
     public void onNoteSelected(String noteId) {
         orderToolbarLayout.setVisibility(View.GONE);
         fUtils.changeFragment(CONTAINER_ID, DetailNoteFragment.newInstance(noteId),true);
+    }
+
+    @Override
+    public void onNewKeyboardNoteClick() {
+        orderToolbarLayout.setVisibility(View.GONE);
+        fUtils.changeFragment(CONTAINER_ID, EditKeyboardNoteFragment.newInstance(),true);
+    }
+
+    @Override
+    public void onNewHandWritingNoteClick() {
+//        orderToolbarLayout.setVisibility(View.GONE);
+
     }
 }

@@ -8,9 +8,16 @@
     <string name="error_logging">Se ha producido un error iniciando sesión</string>
     <string name="error_getting_notes">Se ha producido un error recuperando las notas</string>
     <string name="error_getting_note_data">Se ha producido un error recuperando los datos de la nota</string>
+    <string name="error_saving_note">Se ha producido un error guardado la nota</string>
     <string name="action_try_again">Reintentar</string>
     <string name="text_date_created">Creado: </string>
     <string name="text_date_updated">Actualizado: </string>
+    <string name="hint_title">Título</string>
+    <string name="hint_content">Contenido</string>
+    <string name="button_save">Guardar</string>
+    <string name="button_fab_menu_keyboard_add">Por teclado</string>
+    <string name="button_fab_menu_handwriting_add">Escribir en pantalla</string>
+    <string name="note_saved">guardada correctamente</string>
 
     <string-array name="order_by">
         <item>Fecha de Creación</item>

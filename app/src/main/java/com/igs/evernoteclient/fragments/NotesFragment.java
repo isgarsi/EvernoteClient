@@ -23,7 +23,8 @@ import com.evernote.edam.notestore.NoteFilter;
 import com.evernote.edam.notestore.NoteMetadata;
 import com.evernote.edam.notestore.NotesMetadataList;
 import com.evernote.edam.notestore.NotesMetadataResultSpec;
-import com.evernote.edam.type.NoteSortOrder;
+import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.igs.evernoteclient.DividerItemDecoration;
 import com.igs.evernoteclient.R;
 import com.igs.evernoteclient.adapters.NotesAdapter;
@@ -32,7 +33,7 @@ import com.igs.evernoteclient.utils.Constants;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NotesFragment extends Fragment {
+public class NotesFragment extends Fragment implements View.OnClickListener{
 
     private final static int ORDER_CREATED = 1;
     private final static int ORDER_UPDATED = 2;
@@ -46,6 +47,9 @@ public class NotesFragment extends Fragment {
     private RecyclerView recView;
     private ProgressBar progressBar;
     private Spinner spinOrder;
+    private FloatingActionsMenu fabMenu;
+    private FloatingActionButton fabKeyboardAdd;
+    private FloatingActionButton fabHandwritingAdd;
     private int sortOrder;
 
     public NotesFragment() {
@@ -105,6 +109,13 @@ public class NotesFragment extends Fragment {
         });
         spinOrder.setSelection(sortOrder-1);
 
+        //Add buttons
+        fabMenu = (FloatingActionsMenu) view.findViewById(R.id.fab_menu_add);
+        fabKeyboardAdd = (FloatingActionButton) view.findViewById(R.id.fab_menu_keyboard_add);
+        fabHandwritingAdd = (FloatingActionButton) view.findViewById(R.id.fab_menu_handwriting_add);
+        fabKeyboardAdd.setOnClickListener(this);
+        fabHandwritingAdd.setOnClickListener(this);
+
         return view;
     }
 
@@ -139,7 +150,6 @@ public class NotesFragment extends Fragment {
         spec.setIncludeTitle(true);
         spec.setIncludeCreated(true);
         spec.setIncludeUpdated(true);
-
         noteStoreClient.findNotesMetadataAsync(filter, 0, Integer.MAX_VALUE, spec, new EvernoteCallback<NotesMetadataList>() {
             @Override
             public void onSuccess(NotesMetadataList notes) {
@@ -149,7 +159,7 @@ public class NotesFragment extends Fragment {
             @Override
             public void onException(Exception exception) {
                 Log.e(Constants.DEBUG_TAG, "Error getting notes", exception);
-                Snackbar.make(recView, getString(R.string.error_getting_notes), Snackbar.LENGTH_LONG)
+                Snackbar.make(recView, getString(R.string.error_getting_notes), Snackbar.LENGTH_INDEFINITE)
                         .setAction(getString(R.string.action_try_again), new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -157,6 +167,8 @@ public class NotesFragment extends Fragment {
                             }
                         })
                         .show();
+                recView.setVisibility(View.VISIBLE);
+                progressBar.setVisibility(View.INVISIBLE);
             }
         });
 
@@ -182,7 +194,25 @@ public class NotesFragment extends Fragment {
         mListener = null;
     }
 
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.fab_menu_keyboard_add:
+                mListener.onNewKeyboardNoteClick();
+                fabMenu.collapse();
+                break;
+            case R.id.fab_menu_handwriting_add:
+                mListener.onNewHandWritingNoteClick();
+                fabMenu.collapse();
+                break;
+            default:
+                break;
+        }
+    }
+
     public interface OnNotesFragmentInteractionListener {
         void onNoteSelected(String noteId);
+        void onNewKeyboardNoteClick();
+        void onNewHandWritingNoteClick();
     }
 }
