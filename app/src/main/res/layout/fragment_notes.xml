@@ -7,9 +7,13 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <android.support.v7.widget.RecyclerView android:id="@+id/notes_rv_notes"
+        <android.support.v4.widget.SwipeRefreshLayout android:id="@+id/notes_swipe_refresh_layout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent">
+            <android.support.v7.widget.RecyclerView android:id="@+id/notes_rv_notes"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+        </android.support.v4.widget.SwipeRefreshLayout>
         <ProgressBar android:id="@+id/notes_progress_bar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -50,7 +54,7 @@
             fab:fab_colorNormal="@color/colorAccent"
             fab:fab_title="@string/button_fab_menu_handwriting_add"
             fab:fab_colorPressed="@color/colorPrimaryDark"
-            fab:fab_icon="@drawable/ic_hw"/>
+            fab:fab_icon="@drawable/ic_edit"/>
 
     </com.getbase.floatingactionbutton.FloatingActionsMenu>
 </android.support.design.widget.CoordinatorLayout>

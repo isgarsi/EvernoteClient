@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -13,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 
@@ -50,6 +52,8 @@ public class NotesFragment extends Fragment implements View.OnClickListener{
     private FloatingActionsMenu fabMenu;
     private FloatingActionButton fabKeyboardAdd;
     private FloatingActionButton fabHandwritingAdd;
+    private SwipeRefreshLayout swipeRefreshLayout;
+    private LinearLayout orderToolbarLayout;
     private int sortOrder;
 
     public NotesFragment() {
@@ -71,7 +75,7 @@ public class NotesFragment extends Fragment implements View.OnClickListener{
             @Override
             public void onClick(View v) {
                 int position = recView.getChildAdapterPosition(v);
-                mListener.onNoteSelected(mNotes.get(position).getGuid());
+                mListener.onNoteSelected(mNotes.get(position).getGuid(),mNotes.get(position).getTitle());
             }
         });
         //Default
@@ -90,6 +94,7 @@ public class NotesFragment extends Fragment implements View.OnClickListener{
         recView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
         recView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL_LIST));
         progressBar = (ProgressBar) view.findViewById(R.id.notes_progress_bar);
+        orderToolbarLayout = (LinearLayout) getActivity().findViewById(R.id.main_order_llayout);
 
         //Order by
         spinOrder = (Spinner) getActivity().findViewById(R.id.spinner_order);
@@ -107,7 +112,7 @@ public class NotesFragment extends Fragment implements View.OnClickListener{
             public void onNothingSelected(AdapterView<?> adapterView) {
             }
         });
-        spinOrder.setSelection(sortOrder-1);
+        spinOrder.setSelection(sortOrder - 1);
 
         //Add buttons
         fabMenu = (FloatingActionsMenu) view.findViewById(R.id.fab_menu_add);
@@ -115,6 +120,16 @@ public class NotesFragment extends Fragment implements View.OnClickListener{
         fabHandwritingAdd = (FloatingActionButton) view.findViewById(R.id.fab_menu_handwriting_add);
         fabKeyboardAdd.setOnClickListener(this);
         fabHandwritingAdd.setOnClickListener(this);
+
+        //Se añade refresco por swipe
+        swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.notes_swipe_refresh_layout);
+        swipeRefreshLayout.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimary, R.color.colorPrimaryDark);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                getNotes();
+            }
+        });
 
         return view;
     }
@@ -133,6 +148,7 @@ public class NotesFragment extends Fragment implements View.OnClickListener{
     @Override
     public void onResume() {
         super.onResume();
+        orderToolbarLayout.setVisibility(View.VISIBLE);
         getNotes();
     }
 
@@ -168,6 +184,7 @@ public class NotesFragment extends Fragment implements View.OnClickListener{
                         })
                         .show();
                 recView.setVisibility(View.VISIBLE);
+                swipeRefreshLayout.setRefreshing(false);
                 progressBar.setVisibility(View.INVISIBLE);
             }
         });
@@ -177,6 +194,7 @@ public class NotesFragment extends Fragment implements View.OnClickListener{
     private void updateList(List<NoteMetadata> notes){
         try {
             recView.setVisibility(View.VISIBLE);
+            swipeRefreshLayout.setRefreshing(false);
             progressBar.setVisibility(View.INVISIBLE);
             mNotes.clear();
             if (notes != null && notes.size() > 0) {
@@ -186,6 +204,12 @@ public class NotesFragment extends Fragment implements View.OnClickListener{
         }catch (Exception e){
             Log.e(Constants.DEBUG_TAG,"Error updating the list", e);
         }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        orderToolbarLayout.setVisibility(View.GONE);
     }
 
     @Override
@@ -211,7 +235,7 @@ public class NotesFragment extends Fragment implements View.OnClickListener{
     }
 
     public interface OnNotesFragmentInteractionListener {
-        void onNoteSelected(String noteId);
+        void onNoteSelected(String noteId, String title);
         void onNewKeyboardNoteClick();
         void onNewHandWritingNoteClick();
     }

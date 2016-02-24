@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +23,8 @@ public class EditKeyboardNoteFragment extends Fragment {
     private EditText title;
     private EditText content;
     private Button butSave;
+    private Note note;
+    private boolean updating;
 
     public EditKeyboardNoteFragment() {
         // Required empty public constructor
@@ -32,10 +35,10 @@ public class EditKeyboardNoteFragment extends Fragment {
         return fragment;
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
+    public static EditKeyboardNoteFragment newInstance(Note note) {
+        EditKeyboardNoteFragment fragment = new EditKeyboardNoteFragment();
+        fragment.setNote(note);
+        return fragment;
     }
 
     @Override
@@ -46,33 +49,57 @@ public class EditKeyboardNoteFragment extends Fragment {
 
         title = (EditText) view.findViewById(R.id.edit_note_tv_title);
         content = (EditText) view.findViewById(R.id.edit_note_tv_content);
+
+        if(note == null){
+            note = new Note();
+            updating = false;
+        }else{
+            title.setText(note.getTitle());
+            content.setText(Html.fromHtml(note.getContent()));
+            updating = true;
+        }
+
         butSave = (Button) view.findViewById(R.id.edit_note_btn_save);
         butSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                EvernoteNoteStoreClient noteStoreClient = EvernoteSession.getInstance().getEvernoteClientFactory().getNoteStoreClient();
-
-                Note note = new Note();
+                //fill new data
                 note.setTitle(title.getText().toString());
                 note.setContent(EvernoteUtil.NOTE_PREFIX + content.getText().toString() + EvernoteUtil.NOTE_SUFFIX);
 
-                noteStoreClient.createNoteAsync(note, new EvernoteCallback<Note>() {
-                    @Override
-                    public void onSuccess(Note result) {
-                        Snackbar.make(butSave, title.getText().toString() + " " + getString(R.string.note_saved),
-                                Snackbar.LENGTH_SHORT).show();
-                        getActivity().onBackPressed();
-                    }
-
-                    @Override
-                    public void onException(Exception exception) {
-                        Log.e(Constants.DEBUG_TAG, "Error creating note", exception);
-                        Snackbar.make(butSave,getString(R.string.error_saving_note),Snackbar.LENGTH_LONG).show();
-                    }
-                });
+                //save data
+                EvernoteNoteStoreClient noteStoreClient = EvernoteSession.getInstance().getEvernoteClientFactory().getNoteStoreClient();
+                if(note.getGuid() == null) {
+                    noteStoreClient.createNoteAsync(note, evernoteCallback);
+                }else{
+                    noteStoreClient.updateNoteAsync(note, evernoteCallback);
+                }
             }
         });
 
         return view;
     }
+
+    public void setNote(Note note){
+        this.note = note;
+    }
+
+    EvernoteCallback<Note> evernoteCallback = new EvernoteCallback<Note>() {
+        @Override
+        public void onSuccess(Note result) {
+            String message = (updating) ? getString(R.string.note_updated) : getString(R.string.note_saved);
+            Snackbar.make(butSave, title.getText().toString() + " " + message,
+                    Snackbar.LENGTH_LONG).show();
+            getActivity().onBackPressed();
+
+            if(updating){
+                getActivity().onBackPressed();
+            }
+        }
+
+        @Override
+        public void onException(Exception exception) {
+            Snackbar.make(butSave, getString(R.string.error_saving_note), Snackbar.LENGTH_LONG).show();
+        }
+    };
 }
