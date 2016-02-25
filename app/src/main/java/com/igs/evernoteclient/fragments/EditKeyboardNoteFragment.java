@@ -11,6 +11,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
+
 import com.evernote.client.android.EvernoteSession;
 import com.evernote.client.android.EvernoteUtil;
 import com.evernote.client.android.asyncclient.EvernoteCallback;
@@ -23,6 +26,8 @@ public class EditKeyboardNoteFragment extends Fragment {
     private EditText title;
     private EditText content;
     private Button butSave;
+    private RelativeLayout mainLayout;
+    private ProgressBar progressBar;
     private Note note;
     private boolean updating;
 
@@ -49,6 +54,8 @@ public class EditKeyboardNoteFragment extends Fragment {
 
         title = (EditText) view.findViewById(R.id.edit_note_tv_title);
         content = (EditText) view.findViewById(R.id.edit_note_tv_content);
+        mainLayout = (RelativeLayout) view.findViewById(R.id.edit_notes_main_layout);
+        progressBar = (ProgressBar) view.findViewById(R.id.edit_notes_progress_bar);
 
         if(note == null){
             note = new Note();
@@ -63,16 +70,26 @@ public class EditKeyboardNoteFragment extends Fragment {
         butSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //fill new data
-                note.setTitle(title.getText().toString());
-                note.setContent(EvernoteUtil.NOTE_PREFIX + content.getText().toString() + EvernoteUtil.NOTE_SUFFIX);
+                if(title.getText().toString().trim().equals("") ||
+                        content.getText().toString().trim().equals(""))
+                {
+                    Snackbar.make(butSave, getString(R.string.error_empty_fields),
+                            Snackbar.LENGTH_LONG).show();
+                }else {
+                    progressBar.setVisibility(View.VISIBLE);
+                    mainLayout.setVisibility(View.INVISIBLE);
 
-                //save data
-                EvernoteNoteStoreClient noteStoreClient = EvernoteSession.getInstance().getEvernoteClientFactory().getNoteStoreClient();
-                if(note.getGuid() == null) {
-                    noteStoreClient.createNoteAsync(note, evernoteCallback);
-                }else{
-                    noteStoreClient.updateNoteAsync(note, evernoteCallback);
+                    //fill new data
+                    note.setTitle(title.getText().toString());
+                    note.setContent(EvernoteUtil.NOTE_PREFIX + content.getText().toString() + EvernoteUtil.NOTE_SUFFIX);
+
+                    //save data
+                    EvernoteNoteStoreClient noteStoreClient = EvernoteSession.getInstance().getEvernoteClientFactory().getNoteStoreClient();
+                    if (note.getGuid() == null) {
+                        noteStoreClient.createNoteAsync(note, evernoteCallback);
+                    } else {
+                        noteStoreClient.updateNoteAsync(note, evernoteCallback);
+                    }
                 }
             }
         });
@@ -99,6 +116,8 @@ public class EditKeyboardNoteFragment extends Fragment {
 
         @Override
         public void onException(Exception exception) {
+            progressBar.setVisibility(View.GONE);
+            mainLayout.setVisibility(View.VISIBLE);
             Snackbar.make(butSave, getString(R.string.error_saving_note), Snackbar.LENGTH_LONG).show();
         }
     };

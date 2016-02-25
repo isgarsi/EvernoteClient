@@ -9,6 +9,7 @@
     <string name="error_getting_notes">Se ha producido un error recuperando las notas</string>
     <string name="error_getting_note_data">Se ha producido un error recuperando los datos de la nota</string>
     <string name="error_saving_note">Se ha producido un error guardado la nota</string>
+    <string name="error_empty_fields">Tiene que insertar título y contenido a la nota</string>
     <string name="action_try_again">Reintentar</string>
     <string name="action_logout">Cerrar Sesión</string>
     <string name="text_date_created">Creado: </string>
